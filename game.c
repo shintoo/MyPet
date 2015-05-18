@@ -153,6 +153,7 @@ void Shop(Owner *Player) {
 	while (choice < 0 || choice > 10) {
 		printf("Please enter a number between 0 and 10: ");
 		choice = chget();
+		choice -= '0';
 	}
 	Player->Inventory[choice] += ShopCatalog[choice].count;
 	Player->money -= ShopCatalog[choice].price;
