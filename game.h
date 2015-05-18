@@ -10,7 +10,7 @@
 
 enum Index {DOGFOOD, DOGTREAT, CATFOOD, CATTREAT, WATER,
               TENNISBALL, CHEWTOY, LURE, TOYMOUSE,
-              DOGSHAMPOO, CATSHAMPOO};
+              DOGSHAMPOO, CATSHAMPOO, LEASH};
 
 typedef struct shopitem {
 	int option;
@@ -28,5 +28,7 @@ void Shop(Owner *Player);
 
 char * s_gets(char * st, int n);
 char chget(void);
+
+extern const ShopItem ShopCatalog[12];
 
 #endif

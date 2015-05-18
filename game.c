@@ -8,6 +8,8 @@
 #include "owner.h"
 #include "game.h"
 
+extern const ShopItem ShopCatalog[12];
+
 void Game_Init(Owner **Player, Pet **MyPet) {
 	char type[4];
 	char PlayerName[MAXST];
@@ -42,8 +44,9 @@ void Game_Loop(Owner *Player, Pet *MyPet) {
 		switch(ch) {
 			case 'p': MyPet->Play(MyPet, Player); break;
 			case 'f': MyPet->Feed(MyPet, Player); break;
-			case 'w': MyPet->Wash(MyPet, Player); break;
+			case 'b': MyPet->Wash(MyPet, Player); break;
 			case 's': Shop(Player); break;
+			case 'w': MyPet->Walk(MyPet, Player); break;
 		}
 		ch = ShowMenu(Player, MyPet);
 		time++;
@@ -112,11 +115,11 @@ char ShowMenu(Owner *Player, Pet *MyPet) {
 	       MyPet->age, hunger, thirst, coat);
 
 	printf("p) Play with %s\tf) Feed %s\n"
-		   "w) Wash %s\t\ts) Go to the Shop\nq) Quit\n",
+		   "b) Bathe %s\t\ts) Go to the Shop\nw) Walk\t\tq) Quit\n",
 		   MyPet->name, MyPet->name, MyPet->name);
 	printf("What would you like to do? ");
 	choice = chget();
-	while (strchr("PpFfWwSsQq", choice) == NULL) {
+	while (strchr("PpFfBbSsWwQq", choice) == NULL) {
 		printf("Please enter an option from the menu (p, f, w, s, or q): ");
 		choice = chget(); 
 	}
@@ -127,31 +130,18 @@ char ShowMenu(Owner *Player, Pet *MyPet) {
 void Shop(Owner *Player) {
 	int choice;
 
-	ShopItem ShopCatalog[11] = {
-		{0, 20, "Dog Food", 5},
-		{1, 10, "Dog Treats", 5},
-		{2, 20, "Cat Food", 5},
-		{3, 10, "Cat Treats", 5},
-		{4, 10, "Water", 5},
-		{5, 5, "Tennis Ball", 1},
-		{6, 5, "Chew Toy", 1},
-		{7, 5, "Lure", 1},
-		{8, 5, "Toy Mouse", 1},
-		{9, 10, "Dog Shampoo", 5},
-		{10, 10, "Cat Shampoo", 5}
-	};
-
 	printf("\n\n\n\n\n\nWelcome to MyPets Shop!\nCatalog:\n");
-	for (int i = 0; i < 11; i++) {
+	for (int i = 0; i < 12; i++) {
 		printf("%d) $%d %s (%d)\t", i, ShopCatalog[i].price, ShopCatalog[i].name, ShopCatalog[i].count);
 		if ((i+1) % 2 == 0 && i > 0) {
 			putchar('\n');
 		}
 	}
+	putchar('\n');
 	printf("What would you like to buy? ");
-	choice = chget();
-	choice -= '0';
-	while (choice < 0 || choice > 10) {
+	scanf("%d", &choice);
+	getchar();
+	while (choice < 0 || choice > 11) {
 		printf("Please enter a number between 0 and 10: ");
 		choice = chget();
 		choice -= '0';

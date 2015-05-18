@@ -4,7 +4,6 @@
 typedef struct owner {
 	char *name;
 	int money;
-	int petcount;
 	int *Inventory;
 
 	void (*SetName)(struct owner *self, char *name);

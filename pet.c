@@ -2,9 +2,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
+
 #include "pet.h"
 #include "owner.h"
 #include "game.h"
+
+
+const ShopItem ShopCatalog[12] = {
+	{0, 20, "Dog Food", 5},
+	{1, 10, "Dog Treats", 5},
+	{2, 20, "Cat Food", 5},
+	{3, 10, "Cat Treats", 5},
+	{4, 10, "Water", 5},
+	{5, 5, "Tennis Ball", 1},
+	{6, 5, "Chew Toy", 1},
+	{7, 5, "Lure", 1},
+	{8, 5, "Toy Mouse", 1},
+	{9, 10, "Dog Shampoo", 5},
+	{10, 10, "Cat Shampoo", 5},
+	{11, 30, "Dog Leash", 1}
+};
+
 
 Pet * Pet_New(char type) {
 	Pet *NewPet = malloc(sizeof(Pet));
@@ -22,6 +41,7 @@ Pet * Pet_New(char type) {
 			NewPet->Feed = Dog_Feed;
 			NewPet->Play = Dog_Play;
 			NewPet->Wash = Dog_Wash;
+			NewPet->Walk = Dog_Walk;
 			NewPet->type = 'd';
 		break;
 		case 'c':
@@ -225,4 +245,115 @@ void Dog_Wash(Pet *self, Owner *owner) {
 		self->coat = 10;
 	}
 	owner->Inventory[DOGSHAMPOO] -= 1;
+}
+
+void Dog_Walk(Pet *self, Owner *owner) {
+	if (owner->Inventory[LEASH] == 0) {
+		puts("You don't have a leash!\nYou can buy one at the Shop.");
+		sleep(1);
+		return;
+	}
+	if (self->energy < 30) {
+		printf("%s is too tired for a walk.", self->name);
+		sleep(1);
+		return;
+	}
+	if (self->hunger > 4) {
+		printf("%s is too hungry for a walk.", self->name);
+		sleep(1);
+		return;
+	}
+	if (self->thirst > 3) {
+		printf("%s is too thirsty for a walk.", self->name);
+		sleep(1);
+		return;
+	}
+
+	printf("\nYou and %s leave for a walk...", self->name);
+	time_t t;
+	int item, amount;
+
+	srand((unsigned) time(&t));
+	for (int duration = 0; duration < 8; duration++) {
+		sleep(15 - (self->energy / 10));
+		int event = rand() % 50;
+		switch (event) {
+			case 0 ... 20:
+				printf("\n%s found an item!", self->name);
+				sleep(1);
+				item = rand() % 12;
+				char choice;
+				sleep(1);
+				printf("\n%s!\nt) Take it!\tl) Leave it!\nTake the %s? ", ShopCatalog[item].name, ShopCatalog[item].name);
+				while ((choice = chget()) != 't' && choice != 'l') {
+					printf("\nPlease enter 't' or 'l' to Take or Leave the %s! ", ShopCatalog[item].name);
+				}
+				switch (choice) {
+					case 't':
+						printf("\n%s added to inventory! Thanks, %s!", ShopCatalog[item].name, self->name);
+						owner->Inventory[item] += 1;
+						sleep(1);
+					break;
+					case 'l':
+						printf("\nLeft the %s on the ground.", ShopCatalog[item].name);
+						sleep(1);
+					break;
+				}
+			break;
+			case 21 ... 25:
+				amount = rand() % 50 + 13;
+				printf("\n%s found some cash!\n$%d was added to your wallet.", self->name, amount);
+				owner->money += amount;
+				sleep(1);
+			break;
+			case 26 ... 30:
+				printf("\nLook! There's a squirrel!");
+				sleep(1);
+				printf("\n%s chased after the squirrel!", self->name);
+				sleep(1);
+				self->energy -= 10;
+				if (self->energy < 0) {
+					self->energy = 0;
+				}
+			break;
+			case 31 ... 35:
+				printf("\n%s jumped in a mud puddle!", self->name);
+				self->coat = 0;
+				sleep(1);
+				printf("\n%s got really dirty!", self->name);
+				sleep(1);
+			break;
+			case 36 ... 40:
+				printf("\n%s found a puddle!", self->name);
+				sleep(1);
+				printf("\n%s drank some of the water! ...Ew.", self->name);
+				sleep(1);
+				self->thirst -= 2;
+				self->energy += 5;
+				self->coat -= 5;
+				if (self->coat < 0) {
+					self->coat = 0;
+				}
+			break;
+		}
+	}
+	printf("\n%s really enjoyed the walk!", self->name);
+	sleep(1);
+	self->energy -= 25;
+	if (self->energy < 0) {
+		self->energy = 0;
+	}
+	self->coat -= 2;
+	if (self->coat < 0) {
+		self->coat = 0;
+	}
+	self->hunger += 3;
+	if (self->hunger > 10) {
+		self->hunger = 10;
+	}
+	self->thirst += 5;
+	if (self->thirst > 10) {
+		self->thirst = 10;
+	}
+	sleep(1);
 }
