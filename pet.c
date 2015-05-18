@@ -272,13 +272,14 @@ void Dog_Walk(Pet *self, Owner *owner) {
 	printf("\nYou and %s leave for a walk...", self->name);
 	time_t t;
 	int item, amount;
+	char *animal;
 
 	srand((unsigned) time(&t));
 	for (int duration = 0; duration < 8; duration++) {
 		sleep(15 - (self->energy / 10));
 		int event = rand() % 100;
 		switch (event) {
-			case 5 ... 20:
+			case 0 ... 15:
 				printf("\n%s found an item!", self->name);
 				sleep(1);
 				item = rand() % 12;
@@ -300,16 +301,17 @@ void Dog_Walk(Pet *self, Owner *owner) {
 					break;
 				}
 			break;
-			case 21 ... 25:
+			case 16 ... 25:
 				amount = rand() % 50 + 13;
 				printf("\n%s found some cash!\n$%d was added to your wallet.", self->name, amount);
 				owner->money += amount;
 				sleep(1);
 			break;
 			case 26 ... 30:
-				printf("\nLook! There's a squirrel!");
+				animal = (event % 3 == 0 ? "cat" : event % 3 == 1 ? "bird" : "squirrel");
+				printf("\nLook! There's a %s!", animal);
 				sleep(1);
-				printf("\n%s chased after the squirrel!", self->name);
+				printf("\n%s chased after the %s!", self->name, animal);
 				sleep(1);
 				self->energy -= 10;
 				if (self->energy < 0) {
