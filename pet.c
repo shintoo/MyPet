@@ -20,8 +20,8 @@ const ShopItem ShopCatalog[12] = {
 	{7, 5, "Lure", 1},
 	{8, 5, "Toy Mouse", 1},
 	{9, 10, "Dog Shampoo", 5},
-	{10, 10, "Cat Shampoo", 5},
-	{11, 30, "Dog Leash", 1}
+	{10, 30, "Dog Leash", 1},
+	{11, 10, "Cat Shampoo", 5}
 };
 
 
@@ -276,9 +276,9 @@ void Dog_Walk(Pet *self, Owner *owner) {
 	srand((unsigned) time(&t));
 	for (int duration = 0; duration < 8; duration++) {
 		sleep(15 - (self->energy / 10));
-		int event = rand() % 50;
+		int event = rand() % 100;
 		switch (event) {
-			case 0 ... 20:
+			case 5 ... 20:
 				printf("\n%s found an item!", self->name);
 				sleep(1);
 				item = rand() % 12;

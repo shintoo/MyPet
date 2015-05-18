@@ -72,7 +72,7 @@ void Game_Loop(Owner *Player, Pet *MyPet) {
 }
 
 void Game_Exit(Owner *Player, Pet *MyPet) {
-	printf("%s %s goodbye!\nThanks for playing MyPets!\n", MyPet->name, MyPet->type == 'd' ? "barks" : "meows");
+	printf("%s %s goodbye!\n", MyPet->name, MyPet->type == 'd' ? "barks" : "meows");
 	sleep(1);
 	free(Player->name);
 	free(Player->Inventory);
@@ -115,7 +115,7 @@ char ShowMenu(Owner *Player, Pet *MyPet) {
 	       MyPet->age, hunger, thirst, coat);
 
 	printf("p) Play with %s\tf) Feed %s\n"
-		   "b) Bathe %s\t\ts) Go to the Shop\nw) Walk\t\tq) Quit\n",
+		   "b) Bathe %s\t\ts) Go to the Shop\nw) Walk\t\t\tq) Quit\n",
 		   MyPet->name, MyPet->name, MyPet->name);
 	printf("What would you like to do? ");
 	choice = chget();
@@ -132,7 +132,7 @@ void Shop(Owner *Player) {
 
 	printf("\n\n\n\n\n\nWelcome to MyPets Shop!\nCatalog:\n");
 	for (int i = 0; i < 12; i++) {
-		printf("%d) $%d %s (%d)\t", i, ShopCatalog[i].price, ShopCatalog[i].name, ShopCatalog[i].count);
+		printf("%2d) $%2d %s (%d)\t", i, ShopCatalog[i].price, ShopCatalog[i].name, ShopCatalog[i].count);
 		if ((i+1) % 2 == 0 && i > 0) {
 			putchar('\n');
 		}
