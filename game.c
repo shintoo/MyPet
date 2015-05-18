@@ -70,6 +70,7 @@ void Game_Loop(Owner *Player, Pet *MyPet) {
 
 void Game_Exit(Owner *Player, Pet *MyPet) {
 	printf("%s %s goodbye!\nThanks for playing MyPets!\n", MyPet->name, MyPet->type == 'd' ? "barks" : "meows");
+	sleep(1);
 	free(Player->name);
 	free(Player->Inventory);
 	free(Player);
@@ -105,7 +106,7 @@ char ShowMenu(Owner *Player, Pet *MyPet) {
 		case 8 ... 9: coat = "Clean"; break;
 		case 10:      coat = "Perfect"; break;
 	}
-	printf("\n\n%s\tCash: $%d\n", Player->name, Player->money);
+	printf("\n\n\n\n\n\n\n%s\tCash: $%d\n", Player->name, Player->money);
 	printf("%s\t\t%s\n", MyPet->name, MyPet->type == 'd' ? "Dog" : "Cat");
 	printf("\tAge:\t%d\nStatus:\n\tHunger:\t%s\n\tThirst:\t%s\n\tCoat:\t%s\n\n",
 	       MyPet->age, hunger, thirst, coat);
@@ -140,10 +141,10 @@ void Shop(Owner *Player) {
 		{10, 10, "Cat Shampoo", 5}
 	};
 
-	printf("\nWelcome to MyPets Shop!\nCatalog:\n");
+	printf("\n\n\n\n\n\nWelcome to MyPets Shop!\nCatalog:\n");
 	for (int i = 0; i < 11; i++) {
 		printf("%d) $%d %s (%d)\t", i, ShopCatalog[i].price, ShopCatalog[i].name, ShopCatalog[i].count);
-		if (i % 2 == 0 && i > 0) {
+		if ((i+1) % 2 == 0 && i > 0) {
 			putchar('\n');
 		}
 	}

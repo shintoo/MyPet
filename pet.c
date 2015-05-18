@@ -43,11 +43,7 @@ void Pet_SetName(Pet *self, char *name) {
 void Dog_Feed(Pet *self, Owner *owner) {
 	char choice;
 
-	if (self->hunger < 1) {
-		printf("%s is too full to eat right now!\n", self->name);
-		sleep(1);
-		return;
-	}
+
 	printf("Food & Drink:\n\tf) Dog food (%d)\n\tt) Dog treat (%d)\n\tw) Water (%d)\n"
 	       "What would you like to give to %s? ", owner->Inventory[DOGFOOD],
 		    owner->Inventory[DOGTREAT], owner->Inventory[WATER], self->name);
@@ -58,6 +54,11 @@ void Dog_Feed(Pet *self, Owner *owner) {
 	}
 	switch (choice) {
 		case 'f':
+			if (self->hunger < 2) {
+				printf("%s to too full to eat right now!", self->name);
+				sleep(1);
+				return;
+			}
 			if (owner->Inventory[DOGFOOD] == 0) {
 				puts("You don't have any dog food!\nYou can buy some at the Shop.");
 				sleep(1);
@@ -86,16 +87,21 @@ void Dog_Feed(Pet *self, Owner *owner) {
 			sleep(1);
 		break;
 		case 'w':
+			if (self->thirst < 2) {
+				printf("%s has had enough water for now!", self->name);
+				sleep(1);
+				return;
+			}
 			if (owner->Inventory[WATER] == 0) {
 				puts("You don't have any water!\nYou can buy some at the Shop.");
 				sleep(1);
 				return;
 			}
+			printf("%s ran towards the water bowl!", self->name);
+			sleep(1);
 			self->thirst -= 6;
 			self->energy += 15;
 			owner->Inventory[WATER] -= 1;
-			printf("%s runs towards the water bowl!", self->name);
-			sleep(1);
 			printf("\n%s drank it all!\n", self->name);
 			sleep(1);
 		break;
@@ -135,7 +141,7 @@ void Dog_Play(Pet *self, Owner *owner) {
 	choice = chget();
 	while (strchr("bc", choice) == NULL) {
 		puts("Please enter 'b' for Tennis Ball or 'c' for Chew Toy.");
-		choice = getchar();
+		choice = chget();
 	}
 	switch (choice) {
 		case 'b':
@@ -219,5 +225,4 @@ void Dog_Wash(Pet *self, Owner *owner) {
 		self->coat = 10;
 	}
 	owner->Inventory[DOGSHAMPOO] -= 1;
-	sleep(1);
 }
