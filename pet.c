@@ -240,7 +240,7 @@ void Dog_Wash(Pet *self, Owner *owner) {
 			printf("%s feels refreshed!", self->name);
 		break;
 	}
-	self->coat += 4;
+	self->coat += 7;
 	if (self->coat > 10) {
 		self->coat = 10;
 	}
@@ -263,7 +263,7 @@ void Dog_Walk(Pet *self, Owner *owner) {
 		sleep(1);
 		return;
 	}
-	if (self->thirst > 3) {
+	if (self->thirst > 4) {
 		printf("%s is too thirsty for a walk.", self->name);
 		sleep(1);
 		return;
@@ -273,10 +273,11 @@ void Dog_Walk(Pet *self, Owner *owner) {
 	time_t t;
 	int item, amount;
 	char *animal;
+	int anml;
 
 	srand((unsigned) time(&t));
 	for (int duration = 0; duration < 8; duration++) {
-		sleep(15 - (self->energy / 10));
+		sleep(8 - (self->energy / 10));
 		int event = rand() % 100;
 		switch (event) {
 			case 0 ... 15:
@@ -285,30 +286,40 @@ void Dog_Walk(Pet *self, Owner *owner) {
 				item = rand() % 12;
 				char choice;
 				sleep(1);
-				printf("\n%s!\nt) Take it!\tl) Leave it!\nTake the %s? ", ShopCatalog[item].name, ShopCatalog[item].name);
+				printf("\n%s!\nt) Take it!\tl) Leave it!\nTake the %s? ",
+				       ShopCatalog[item].name, ShopCatalog[item].name);
 				while ((choice = chget()) != 't' && choice != 'l') {
-					printf("\nPlease enter 't' or 'l' to Take or Leave the %s! ", ShopCatalog[item].name);
+					printf("\nPlease enter 't' or 'l' to Take or Leave the %s! ",
+					       ShopCatalog[item].name);
 				}
 				switch (choice) {
 					case 't':
-						printf("\n%s added to inventory! Thanks, %s!", ShopCatalog[item].name, self->name);
+						printf("\n%s added to inventory! Thanks, %s!",
+						ShopCatalog[item].name, self->name);
 						owner->Inventory[item] += 1;
 						sleep(1);
 					break;
 					case 'l':
-						printf("\nLeft the %s on the ground.", ShopCatalog[item].name);
+						printf("\nLeft the %s on the ground.",
+						       ShopCatalog[item].name);
 						sleep(1);
 					break;
 				}
 			break;
 			case 16 ... 25:
 				amount = rand() % 50 + 13;
-				printf("\n%s found some cash!\n$%d was added to your wallet.", self->name, amount);
+				printf("\n%s found some cash!\n$%d was added to your wallet.",
+				       self->name, amount);
 				owner->money += amount;
 				sleep(1);
 			break;
 			case 26 ... 30:
-				animal = (event % 3 == 0 ? "cat" : event % 3 == 1 ? "bird" : "squirrel");
+				anml = event % 3;
+				switch (anml) {
+					case 0: animal = "bird"; break;
+					case 1: animal = "squirrel"; break;
+					case 2: animal = "cat"; break;
+				}
 				printf("\nLook! There's a %s!", animal);
 				sleep(1);
 				printf("\n%s chased after the %s!", self->name, animal);
