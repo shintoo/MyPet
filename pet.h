@@ -33,5 +33,4 @@ void Dog_Walk(Pet *self, Owner *owner);
 void Cat_Feed(Pet *self, Owner *owner);
 void Cat_Play(Pet *self, Owner *owner);
 void Cat_Wash(Pet *self, Owner *owner);
-
 #endif
