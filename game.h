@@ -15,6 +15,7 @@ enum Index {DOGFOOD, DOGTREAT, CATFOOD, CATTREAT, WATER,
 typedef struct shopitem {
 	int option;
 	int price;
+	int resellValue;
 	char *name;
 	int count;
 } ShopItem;

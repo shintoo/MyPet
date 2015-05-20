@@ -10,18 +10,19 @@
 
 
 const ShopItem ShopCatalog[12] = {
-	{0, 20, "Dog Food", 5},
-	{1, 10, "Dog Treats", 5},
-	{2, 20, "Cat Food", 5},
-	{3, 10, "Cat Treats", 5},
-	{4, 10, "Water", 5},
-	{5, 5, "Tennis Ball", 1},
-	{6, 5, "Chew Toy", 1},
-	{7, 5, "Lure", 1},
-	{8, 5, "Toy Mouse", 1},
-	{9, 10, "Dog Shampoo", 5},
-	{10, 30, "Dog Leash", 1},
-	{11, 10, "Cat Shampoo", 5}
+/*  ch   $b  $s  name           cnt */
+	{0,  20, 3,  "Dog Food",    5},
+	{1,  10, 1,  "Dog Treats",  5},
+	{2,  20, 3,  "Cat Food",    5},
+	{3,  10, 1,  "Cat Treats",  5},
+	{4,  10, 1,  "Water",       5},
+	{5,  5,  2,  "Tennis Ball", 1},
+	{6,  5,  2,  "Chew Toy",    1},
+	{7,  5,  2,  "Lure",        1},
+	{8,  5,  2,  "Toy Mouse",   1},
+	{9,  10, 1,  "Dog Shampoo", 5},
+	{10, 30, 20, "Dog Leash",   1},
+	{11, 10, 1,  "Cat Shampoo", 5}
 };
 
 
@@ -307,7 +308,7 @@ void Dog_Walk(Pet *self, Owner *owner) {
 				}
 			break;
 			case 16 ... 25:
-				amount = rand() % 50 + 13;
+				amount = rand() % 5 + 9;
 				printf("\n%s found some cash!\n$%d was added to your wallet.",
 				       self->name, amount);
 				owner->money += amount;
