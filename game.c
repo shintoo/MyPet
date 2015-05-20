@@ -178,7 +178,6 @@ void Shop(Owner *Player) {
 			for (int i = 0; i < 12; i++) {
 				if (Player->Inventory[i] > 0) {
 					emptyinventory = false;
-					itemsowned++;
 				}
 			}
 			if (emptyinventory == true) {
@@ -191,9 +190,10 @@ void Shop(Owner *Player) {
 					printf("%d ($%2d) %s (%d)\t",
 					       i, ShopCatalog[i].resellValue, 
 					       ShopCatalog[i].name, Player->Inventory[i]);
-				}
-				if (i % itemsowned == 0 && itemsowned > 0) {
-					putchar('\n');
+					itemsowned++;
+					if (itemsowned % 2 == 0) {
+						putchar('\n');
+					}
 				}
 			}
 			printf("\nWhat would you like to sell? ");
