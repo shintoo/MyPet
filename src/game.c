@@ -17,7 +17,7 @@ void Game_Init(Owner **Player, Pet **MyPet) {
 	char PetName[MAXST];
 
 	*Player = Owner_New();
-	printf("\n\n\n\n\n\n\n\n\n\nWelcome to MyPets!\nWhat is your name?\nName: ");
+	printf("\n\n\n\n\n\n\n\n\n\nWelcome to MyPet!\nWhat is your name?\nName: ");
 	s_gets(PlayerName, MAXST);
 	(*Player)->SetName(*Player, PlayerName);
 	
@@ -57,19 +57,11 @@ void Game_Loop(Owner *Player, Pet *MyPet) {
 		}
 		if (time % 5 == 0) {
 			MyPet->hunger++;
-			if (MyPet->hunger > 10) {
-				MyPet->hunger = 10;
-			}
 			MyPet->thirst++;
-			if (MyPet->thirst > 10) {
-				MyPet->thirst = 10;
-			}
 			MyPet->coat--;
-			if (MyPet->coat < 0) {
-				MyPet->coat = 0;
-			}
 		}
 		MyPet->energy += 2;
+		MyPet->AssertBounds(MyPet);
 	}
 }
 
@@ -140,16 +132,16 @@ void Shop(Owner *Player) {
 
 	printf("\n\n\n\n\n\n\n\nWelcome to MyPet Shop!\n"
 	       "How can I help you?\n\n"
-	       "b) Buy supplies\t\ts) Sell items\n\n"
+	       "\tb) Buy supplies\n\ts) Sell items\n\n"
 	       "What would you like to do? ");
 	buyorsell = chget();
 	while (buyorsell != 'b' && buyorsell != 's') {
 		printf("Please enter 'b' or 's' to buy or sell: ");
 		buyorsell = chget();
 	}
-	puts("\n\n\n\nMyPet Shop\n\n");
 	switch(buyorsell) {
 		case 'b':
+			puts("\n\n\n\nMyPet Shop");
 			puts("Catalog:\n");
 			for (int i = 0; i < 12; i++) {
 				printf("%2d) $%2d %s (%d)\t",
@@ -161,12 +153,21 @@ void Shop(Owner *Player) {
 			}
 			putchar('\n');
 			printf("What would you like to buy? ");
-			scanf("%d", &choice);
-			getchar();
+			if (scanf("%d", &choice) != 1) {
+				getchar();
+				return;
+			}
 			while (choice < 0 || choice > 11) {
-				printf("Please enter a number between 0 and 10: ");
-				choice = chget();
-				choice -= '0';
+				printf("Please enter a number between 0 and 11: ");
+				if (scanf("%d", &choice) != 1) {
+					eatline();
+					return;
+				}
+			}
+			if (Player->money < ShopCatalog[choice].price) {
+				printf("You don't have enough money for that!\n");
+				sleep(1);
+				return;
 			}
 			Player->Inventory[choice] += ShopCatalog[choice].count;
 			Player->money -= ShopCatalog[choice].price;
@@ -182,12 +183,14 @@ void Shop(Owner *Player) {
 			}
 			if (emptyinventory == true) {
 				puts("Your inventory is empty!");
-				break;
+				sleep(1);
+				return;
 			}
+			puts("\n\n\n\nMyPet Shop");
 			puts("Your inventory:");
 			for (int i = 0; i < 12; i++) {
 				if (Player->Inventory[i] != 0) {
-					printf("%d ($%2d) %s (%d)\t",
+					printf("%d ($%d) %s (%d)\t",
 					       i, ShopCatalog[i].resellValue, 
 					       ShopCatalog[i].name, Player->Inventory[i]);
 					itemsowned++;
@@ -197,28 +200,41 @@ void Shop(Owner *Player) {
 				}
 			}
 			printf("\nWhat would you like to sell? ");
-			scanf("%d", &choice);
-			if (Player->Inventory[choice] == 0) {
-				printf("Please enter a number from the menu." );
-				scanf("%d", &choice);
+			if (scanf("%d", &choice) != 1) {
+				eatline();
+				return;
 			}
-			printf("How many %s would you like to sell? ", ShopCatalog[choice].name);
-			scanf("%d", &sellcount);
+			while (Player->Inventory[choice] == 0) {
+				printf("Please enter a number from the menu. " );
+				if (scanf("%d", &choice) != 1) {
+					eatline();
+					return;
+				}
+			}
+			printf("How many %s would you like to sell? ",
+			       ShopCatalog[choice].name);
+			if (scanf("%d", &sellcount) != 1) {
+				eatline();
+				return;
+			}
 			while (sellcount > Player->Inventory[choice]) {
 				printf("You only have %d!\nHow many would you like to sell? ",
 				       Player->Inventory[choice]);
-				scanf("%d", &sellcount);
+				if (scanf("%d", &sellcount) != 1) {
+					eatline();
+					return;
+				}
 			}
 			Player->Inventory[choice] -= sellcount;
 			Player->money += ShopCatalog[choice].resellValue * sellcount;
 			printf("Sold %d %s to the shop.\n$%d added to wallet.\n"
 			       "Thank you for your business!", sellcount, 
-			      ShopCatalog[choice].name, ShopCatalog[choice].resellValue * sellcount);
+			      ShopCatalog[choice].name,
+			      ShopCatalog[choice].resellValue * sellcount);
 		break;
 	}
 	sleep(2);
 }
-
 
 char * s_gets(char * st, int n) {
 	char * ret_val;
@@ -240,4 +256,11 @@ char chget(void) {
 	char str[3];
 	s_gets(str, 3);
 	return str[0];
+}
+
+void eatline(void) {
+	char ch;
+	while (ch != '\n') {
+		ch = getchar();
+	}
 }

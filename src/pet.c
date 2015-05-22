@@ -36,6 +36,8 @@ Pet * Pet_New(char type) {
 	NewPet->age = 0;
 	
 	NewPet->SetName = Pet_SetName;
+	NewPet->AssertBounds = Pet_AssertBounds;
+
 	switch(type) {
 		case 'd':
 		case 'D':
@@ -64,11 +66,20 @@ void Pet_SetName(Pet *self, char *name) {
 void Dog_Feed(Pet *self, Owner *owner) {
 	char choice;
 
+	if (owner->Inventory[DOGFOOD] == 0 && owner->Inventory[DOGTREAT] == 0
+		&& owner->Inventory[WATER] == 0) {
+		printf("You don't have any food!\nYou can buy supplies at the Shop.\n");
+		sleep(2);
+		return;
+	}
 
-	printf("Food & Drink:\n\tf) Dog food (%d)\n\tt) Dog treat (%d)\n\tw) Water (%d)\n"
+	printf("\nFood & Drink:\n\tf) Dog food (%d)\n\tt) Dog treat (%d)\n\tw) Water (%d)\n"
 	       "What would you like to give to %s? ", owner->Inventory[DOGFOOD],
 		    owner->Inventory[DOGTREAT], owner->Inventory[WATER], self->name);
 	choice = chget();
+	if (choice == 'b') {
+		return;
+	}
 	while (strchr("ftw", choice) == NULL) {
 		puts("Please enter 'f' for Dog food, 't' for Dog treat, or 'w' for Water!");
 		choice = chget();
@@ -87,6 +98,7 @@ void Dog_Feed(Pet *self, Owner *owner) {
 			}
 			self->hunger -= 6;
 			self->energy += 25;
+			self->AssertBounds(self);
 			owner->Inventory[DOGFOOD] -= 1;
 			printf("%s is sniffing the bowl...", self->name);
 			sleep(2);
@@ -101,6 +113,7 @@ void Dog_Feed(Pet *self, Owner *owner) {
 			}
 			self->hunger -= 2;
 			self->energy += 40;
+			self->AssertBounds(self);
 			owner->Inventory[DOGTREAT] -= 1;
 			printf("%s barks in excitement!", self->name);
 			sleep(1);
@@ -122,19 +135,11 @@ void Dog_Feed(Pet *self, Owner *owner) {
 			sleep(1);
 			self->thirst -= 6;
 			self->energy += 15;
+			self->AssertBounds(self);
 			owner->Inventory[WATER] -= 1;
 			printf("\n%s drank it all!\n", self->name);
 			sleep(1);
 		break;
-	}
-	if (self->hunger < 0) {
-		self->hunger = 0;
-	}
-	if (self->thirst < 0) {
-		self->thirst = 0;
-	}
-	if (self->energy > 50) {
-		self->energy = 50;
 	}
 }
 
@@ -157,15 +162,23 @@ void Dog_Play(Pet *self, Owner *owner) {
 		return;
 	}
 	
-	printf("Toys:\n\tb) Tennis Ball\n\tc) Chew Toy\n");
+	if (owner->Inventory[TENNISBALL] == 0 && owner->Inventory[CHEWTOY] == 0) {
+		printf("You don't have any toys!\nYou can buy some at the Shop.\n");
+		sleep(2);
+		return;
+	}
+	printf("Toys:\n\tt) Tennis Ball\n\tc) Chew Toy\n");
 	printf("What do you want to use to play with %s? ", self->name);
 	choice = chget();
-	while (strchr("bc", choice) == NULL) {
-		puts("Please enter 'b' for Tennis Ball or 'c' for Chew Toy.");
+	if (choice == 'b') {
+		return;
+	}
+	while (strchr("tc", choice) == NULL) {
+		puts("Please enter 't' for Tennis Ball or 'c' for Chew Toy.");
 		choice = chget();
 	}
 	switch (choice) {
-		case 'b':
+		case 't':
 			if (owner->Inventory[TENNISBALL] == 0) {
 				puts("You don't have a tennis ball!\nYou can buy one at the Shop.");
 				sleep(1);
@@ -176,10 +189,8 @@ void Dog_Play(Pet *self, Owner *owner) {
 			self->hunger += 1;
 			self->thirst += 3;
 			self->energy -= 20;
-			if (self->energy < 0) {
-				self->energy = 0;
-			}
 			self->coat -= 2;
+			self->AssertBounds(self);
 			switch (self->energy) {
 				case 0 ... 11:
 					printf("%s got all tired out from playing!\n", self->name);
@@ -203,6 +214,7 @@ void Dog_Play(Pet *self, Owner *owner) {
 			self->thirst += 1;
 			self->energy -= 10;
 			self->coat -= 4;
+			self->AssertBounds(self);
 			switch (self->energy) {
 				case 0 ... 11:
 					printf("%s is worn out.\n", self->name);
@@ -215,18 +227,12 @@ void Dog_Play(Pet *self, Owner *owner) {
 			}
 		break;
 	}
-	if (self->energy < 0) {
-		self->energy = 0;
-	}
-	if (self->coat < 0) {
-		self->coat = 0;
-	}
 }
 
 void Dog_Wash(Pet *self, Owner *owner) {
 	if (owner->Inventory[DOGSHAMPOO] == 0) {
 		puts("You don't have any dog shampoo!\nYou can buy some at the Shop.");
-		sleep(1);
+		sleep(2);
 		return;
 	}
 	switch (self->coat) {
@@ -242,16 +248,14 @@ void Dog_Wash(Pet *self, Owner *owner) {
 		break;
 	}
 	self->coat += 7;
-	if (self->coat > 10) {
-		self->coat = 10;
-	}
+	self->AssertBounds(self);
 	owner->Inventory[DOGSHAMPOO] -= 1;
 }
 
 void Dog_Walk(Pet *self, Owner *owner) {
 	if (owner->Inventory[LEASH] == 0) {
 		puts("You don't have a leash!\nYou can buy one at the Shop.");
-		sleep(1);
+		sleep(2);
 		return;
 	}
 	if (self->energy < 30) {
@@ -277,11 +281,11 @@ void Dog_Walk(Pet *self, Owner *owner) {
 	int anml;
 
 	srand((unsigned) time(&t));
-	for (int duration = 0; duration < 8; duration++) {
+	for (int duration = 0; duration < 15; duration++) {
 		sleep(8 - (self->energy / 10));
 		int event = rand() % 100;
 		switch (event) {
-			case 0 ... 15:
+			case 0 ... 10:
 				printf("\n%s found an item!", self->name);
 				sleep(1);
 				item = rand() % 12;
@@ -307,14 +311,14 @@ void Dog_Walk(Pet *self, Owner *owner) {
 					break;
 				}
 			break;
-			case 16 ... 25:
+			case 11 ... 20:
 				amount = rand() % 5 + 9;
 				printf("\n%s found some cash!\n$%d was added to your wallet.",
 				       self->name, amount);
 				owner->money += amount;
 				sleep(1);
 			break;
-			case 26 ... 30:
+			case 21 ... 30:
 				anml = event % 3;
 				switch (anml) {
 					case 0: animal = "bird"; break;
@@ -326,9 +330,6 @@ void Dog_Walk(Pet *self, Owner *owner) {
 				printf("\n%s chased after the %s!", self->name, animal);
 				sleep(1);
 				self->energy -= 10;
-				if (self->energy < 0) {
-					self->energy = 0;
-				}
 			break;
 			case 31 ... 35:
 				printf("\n%s jumped in a mud puddle!", self->name);
@@ -337,7 +338,7 @@ void Dog_Walk(Pet *self, Owner *owner) {
 				printf("\n%s got really dirty!", self->name);
 				sleep(1);
 			break;
-			case 36 ... 40:
+			case 36 ... 50:
 				printf("\n%s found a puddle!", self->name);
 				sleep(1);
 				printf("\n%s drank some of the water! ...Ew.", self->name);
@@ -345,29 +346,38 @@ void Dog_Walk(Pet *self, Owner *owner) {
 				self->thirst -= 2;
 				self->energy += 5;
 				self->coat -= 5;
-				if (self->coat < 0) {
-					self->coat = 0;
-				}
 			break;
 		}
 	}
 	printf("\n%s really enjoyed the walk!", self->name);
 	sleep(1);
-	self->energy -= 25;
-	if (self->energy < 0) {
-		self->energy = 0;
+	self->AssertBounds(self);
+}
+
+void Pet_AssertBounds(Pet *self) {
+	if (self->hunger < 0) {
+		self->hunger = 0;
 	}
-	self->coat -= 2;
+	if (self->thirst < 0) {
+		self->thirst = 0;
+	}
 	if (self->coat < 0) {
 		self->coat = 0;
 	}
-	self->hunger += 3;
+	if (self->energy < 0) {
+		self->energy = 0;
+	}
+
 	if (self->hunger > 10) {
 		self->hunger = 10;
 	}
-	self->thirst += 5;
 	if (self->thirst > 10) {
 		self->thirst = 10;
 	}
-	sleep(1);
+	if (self->coat > 10) {
+		self->coat = 10;
+	}
+	if (self->energy > 50) {
+		self->energy = 50;
+	}
 }

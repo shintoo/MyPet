@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -std=c11
-SRC= main.c owner.c pet.c game.c
-HDR= owner.h pet.h game.h
+SRC= src/main.c src/owner.c src/pet.c src/game.c
+HDR= src/owner.h src/pet.h src/game.h
 
 all: $(SRC) $(HDR)
 	$(CC) -o MyPet $(SRC) $(CFLAGS)

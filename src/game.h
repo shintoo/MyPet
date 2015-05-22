@@ -26,9 +26,12 @@ void Game_Loop(Owner *Player, Pet *MyPet);
 void Game_Exit(Owner *Player, Pet *MyPet);
 char ShowMenu(Owner *Player, Pet *MyPet);
 void Shop(Owner *Player);
+void Save(Owner *Player, Pet *player);
+void Load(Owner *Player, Pet *player);
 
 char * s_gets(char * st, int n);
 char chget(void);
+void eatline(void);
 
 extern const ShopItem ShopCatalog[12];
 

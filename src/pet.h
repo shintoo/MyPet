@@ -14,16 +14,20 @@ typedef struct pet {
 	int age;
 	
 	void (*SetName)(struct pet *self, char *name);
-	
+		
 	void (*Feed)(struct pet *self, Owner *owner);
 	void (*Play)(struct pet *self, Owner *owner);
 	void (*Wash)(struct pet *self, Owner *owner);
 	void (*Walk)(struct pet *self, Owner *owner);
+
+	void (*AssertBounds)(struct pet *self);
 } Pet;
 
 
 Pet * Pet_New(char type);
 void Pet_SetName(Pet *self, char *name);
+
+void Pet_AssertBounds(Pet *self);
 
 void Dog_Feed(Pet *self, Owner *owner);
 void Dog_Play(Pet *self, Owner *owner);
