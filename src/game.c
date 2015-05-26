@@ -157,6 +157,7 @@ void Shop(Owner *Player) {
 				getchar();
 				return;
 			}
+			eatline();
 			while (choice < 0 || choice > 11) {
 				printf("Please enter a number between 0 and 11: ");
 				if (scanf("%d", &choice) != 1) {
@@ -217,6 +218,14 @@ void Shop(Owner *Player) {
 				eatline();
 				return;
 			}
+			while (sellcount == 0) {
+				printf("You cant sell 0 %s!\nHow many would you like to sell? ",
+				        ShopCatalog[choice].name);
+				if (scanf("%d", &choice) != 1) {
+					eatline();
+					return;
+				}
+			}
 			while (sellcount > Player->Inventory[choice]) {
 				printf("You only have %d!\nHow many would you like to sell? ",
 				       Player->Inventory[choice]);
@@ -259,7 +268,7 @@ char chget(void) {
 }
 
 void eatline(void) {
-	char ch;
+	char ch = 0;
 	while (ch != '\n') {
 		ch = getchar();
 	}

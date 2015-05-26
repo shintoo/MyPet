@@ -8,6 +8,9 @@ Owner * Owner_New(void) {
 	Owner *new = malloc(sizeof(Owner));
 	new->name = malloc(MAXST * sizeof(char));
 	new->Inventory = malloc(ITEMS * sizeof(int));
+	for (int i = 0; i < ITEMS; i++) {
+		new->Inventory[i] = 0;
+	}
 	new->SetName = Owner_SetName;
 	
 	new->money = 100;
